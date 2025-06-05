@@ -21,13 +21,21 @@ function addTask() {
 
 function createTaskElement(taskText, completed = false) {
   const li = document.createElement('li');
-  li.textContent = taskText;
-  if (completed) li.classList.add('completed');
 
-  li.addEventListener('click', () => {
-    li.classList.toggle('completed');
+  // Checkbox
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = completed;
+  checkbox.addEventListener('change', () => {
+    li.classList.toggle('completed', checkbox.checked);
   });
 
+  // Task text
+  const span = document.createElement('span');
+  span.textContent = taskText;
+  span.style.flex = '1';
+
+  // Remove button
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove';
   removeBtn.classList.add('removeBtn');
@@ -36,16 +44,24 @@ function createTaskElement(taskText, completed = false) {
     li.remove();
   });
 
+  // Append elements
+  li.appendChild(checkbox);
+  li.appendChild(span);
   li.appendChild(removeBtn);
+
+  if (completed) {
+    li.classList.add('completed');
+  }
+
   return li;
 }
 
 function saveTasks() {
   const tasks = [];
   taskList.querySelectorAll('li').forEach(li => {
-    const taskText = li.childNodes[0].textContent;
-    const isCompleted = li.classList.contains('completed');
-    tasks.push({ text: taskText, completed: isCompleted });
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    const span = li.querySelector('span');
+    tasks.push({ text: span.textContent, completed: checkbox.checked });
   });
   localStorage.setItem('todoList', JSON.stringify(tasks));
   alert('Tasks saved!');
